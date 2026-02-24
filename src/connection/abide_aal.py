@@ -53,7 +53,7 @@ with matplotlib.rc_context({'font.size': 6}):
         reorder='average' # type: ignore
     )
 
-subject_id = "sub-0000000"  # NOTE: This is just an example subject ID. The actual ID may differ based on the dataset and how it's organized.
+subject_id = str(dataset.phenotypic['SUB_ID'].iloc[0])
 output_path = f"out/figures/abide/aal/connection_check_{subject_id}.png"
 plt.savefig(output_path, bbox_inches='tight')
 
