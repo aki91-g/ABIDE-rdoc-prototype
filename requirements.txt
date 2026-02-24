@@ -1,6 +1,7 @@
 # --- Core Brain Science ---
 nilearn      # fMRI / MRI analysis & plotting
 mne          # EEG / MEG signal processing
+mne-connectivity
 nibabel      # Low-level neuroimaging file I/O
 bctpy        # Brain Connectivity Toolbox (Python version)
 
@@ -22,5 +23,3 @@ dvc          # Data version control
 
 # --- Jupyter & Visualization ---
 ipykernel
-mne
-mne-connectivity
