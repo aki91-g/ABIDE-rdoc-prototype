@@ -1,0 +1,21 @@
+# --- Core Brain Science ---
+nilearn      # fMRI / MRI analysis & plotting
+mne          # EEG / MEG signal processing
+nibabel      # Low-level neuroimaging file I/O
+bctpy        # Brain Connectivity Toolbox (Python version)
+
+# --- Math & Network ---
+networkx     # Graph theory algorithms
+numpy
+pandas
+scipy
+
+# --- Machine Learning & Stats ---
+scikit-learn
+statsmodels
+matplotlib
+seaborn
+
+# --- Workflow & Data Management ---
+snakemake    # Analysis pipeline
+dvc          # Data version control
