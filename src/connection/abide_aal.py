@@ -9,7 +9,7 @@ from nilearn.connectome import ConnectivityMeasure
 from nilearn.maskers import NiftiLabelsMasker
 
 # directory for output
-os.makedirs("out/figures/abide/aal", exist_ok=True)
+os.makedirs("output/figures/abide/aal", exist_ok=True)
 
 print("--- downloading single data from ABIDE... ---")
 
@@ -54,7 +54,7 @@ with matplotlib.rc_context({'font.size': 6}):
     )
 
 subject_id = str(dataset.phenotypic['SUB_ID'].iloc[0])
-output_path = f"out/figures/abide/aal/connection_check_{subject_id}.png"
+output_path = f"output/figures/abide/aal/connection_check_{subject_id}.png"
 plt.savefig(output_path, bbox_inches='tight')
 
 print(f"SUCCESS! Output saved to {output_path}")

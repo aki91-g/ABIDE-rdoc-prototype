@@ -1,14 +1,17 @@
 name: Update Directory Tree
 on:
   push:
-    branches: [ main ]
+    branches: [ "**" ]
     paths-ignore:
+      - '.devcontainer/**'
+      - '.github/**'
       - 'README.md'
-      - 'docs/**'
 
 jobs:
   update-readme:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
       
@@ -17,8 +20,33 @@ jobs:
 
       - name: Generate Directory Tree
         run: |
-          TREE=$(tree -a -I '.git|.devcontainer|.github|__pycache__|.dvc' --dirsfirst)
-          sed -i "/\[TREE-START\]/,/\[TREE-END\]/c\\[TREE-START\]\n\`\`\`text\n${TREE}\n\`\`\`\n[TREE-END]" README.md
+          set -e
+          TREE=$(tree -a -I '.git|.devcontainer|.github|__pycache__|.dvc' --dirsfirst) || { echo "Error: tree command failed"; exit 1; }
+          
+          # Write tree output to temporary file to avoid shell escaping issues
+          echo "$TREE" > /tmp/tree_output.txt
+          
+          python3 << 'PYTHON_EOF'
+          import os
+          import sys
+          
+          with open('/tmp/tree_output.txt', 'r') as f:
+              tree_text = f"```text\n{f.read().strip()}\n```"
+
+          with open('README.md', 'r') as f:
+              content = f.read()
+
+          if START_MARKER not in content or END_MARKER not in content:
+              print(f"Error: Markers {START_MARKER} or {END_MARKER} not found!")
+              sys.exit(1)
+          
+          import re
+          pattern = re.escape(START_MARKER) + r"(.*)" + re.escape(END_MARKER)
+          new_content = re.sub(pattern, f"{START_MARKER}\n{tree_text}\n{END_MARKER}", content, flags=re.DOTALL)
+
+          with open('README.md', 'w') as f:
+              f.write(new_content)
+          PYTHON_EOF
 
       - name: Commit and Push
         run: |
