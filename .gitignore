@@ -8,7 +8,6 @@ ENV/
 
 # --- Jupyter Notebook ---
 .ipynb_checkpoints
-*.ipynb
 
 # --- Nilearn & Datasets (重要！) ---
 nilearn_data/
@@ -16,8 +15,15 @@ nilearn_data/
 nilearn_ccache/
 
 # --- Project Specific ---
-out/figures/abide/aal/*.png
+output/figures/abide/aal/*.png
+data/*
+output/*
+!data/.gitkeep
+
 
 # --- OS Standards ---
 .DS_Store
 Thumbs.db
+
+# --- IDEs ---
+.vscode/

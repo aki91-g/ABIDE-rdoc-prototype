@@ -1,0 +1,59 @@
+name: Update Directory Tree
+on:
+  push:
+    branches: [ "**" ]
+    paths-ignore:
+      - '.devcontainer/**'
+      - '.github/**'
+      - 'README.md'
+
+jobs:
+  update-readme:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install tree
+        run: sudo apt-get update && sudo apt-get install -y tree
+
+      - name: Generate Directory Tree
+        run: |
+          set -e
+          TREE=$(tree -a -I '.git|.devcontainer|.github|__pycache__|.dvc' --dirsfirst) || { echo "Error: tree command failed"; exit 1; }
+          
+          # Write tree output to temporary file to avoid shell escaping issues
+          echo "$TREE" > /tmp/tree_output.txt
+          
+          python3 << 'PYTHON_EOF'
+          import os
+          import sys
+
+          START_MARKER = "[TREE-START]"
+          END_MARKER = "[TREE-END]"
+          
+          with open('/tmp/tree_output.txt', 'r') as f:
+              tree_text = f"```text\n{f.read().strip()}\n```"
+
+          with open('README.md', 'r') as f:
+              content = f.read()
+
+          if START_MARKER not in content or END_MARKER not in content:
+              print(f"Error: Markers {START_MARKER} or {END_MARKER} not found!")
+              sys.exit(1)
+          
+          import re
+          pattern = re.escape(START_MARKER) + r"(.*)" + re.escape(END_MARKER)
+          new_content = re.sub(pattern, f"{START_MARKER}\n{tree_text}\n{END_MARKER}", content, flags=re.DOTALL)
+
+          with open('README.md', 'w') as f:
+              f.write(new_content)
+          PYTHON_EOF
+
+      - name: Commit and Push
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add README.md
+          git diff --quiet && git diff --staged --quiet || (git commit -m "docs: auto-update directory tree [skip ci]" && git push)
