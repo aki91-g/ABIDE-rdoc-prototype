@@ -29,6 +29,9 @@ jobs:
           python3 << 'PYTHON_EOF'
           import os
           import sys
+
+          START_MARKER = "[TREE-START]"
+          END_MARKER = "[TREE-END]"
           
           with open('/tmp/tree_output.txt', 'r') as f:
               tree_text = f"```text\n{f.read().strip()}\n```"
